@@ -28,8 +28,8 @@ export default function RegisterPage() {
       <div className="card auth-card">
         <div style={{ marginBottom: '20px' }}>
           <div className="brand" style={{ justifyContent: 'center' }}>
-            <div className="brand-mark">D</div>
-            <span>DevFlow</span>
+            <div className="brand-mark">N</div>
+            <span>Nexora</span>
           </div>
         </div>
 

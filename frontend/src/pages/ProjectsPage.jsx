@@ -77,7 +77,7 @@ export default function ProjectsPage() {
       <div className="page-header">
         <div>
           <p className="muted" style={{ margin: 0 }}>Portfolio de entregas</p>
-          <h1 className="page-title">Projetos</h1>
+          <h1 className="page-title">Operações</h1>
         </div>
       </div>
 

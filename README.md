@@ -1,98 +1,48 @@
-# DevFlow
+# Nexora
 
-Full Stack Project Management Platform built with React, Express and SQLite.
+Enterprise Operations Management — uma central corporativa full stack para organizar operações, registros, responsáveis, prioridades e prazos.
 
-## About
+## Produto
 
-DevFlow is a project management platform designed to help teams track projects, tasks, priorities and delivery status in a Kanban workflow. It includes authentication, project creation, task filtering, drag and drop style movement and dashboard metrics.
+A Nexora foi desenhada como software interno de trabalho, não como um dashboard SaaS genérico. A experiência prioriza leitura rápida, tabelas densas e organizadas, filtros, rastreabilidade e eficiência operacional.
 
-## Features
+- Central de trabalho orientada a pendências
+- Operações com progresso calculado
+- Registros e solicitações em tabela corporativa
+- Responsáveis, prioridades, status e prazos
+- Pesquisa e filtros combináveis
+- Autenticação JWT e isolamento de dados por usuário
+- Interface responsiva com microinterações e estados de loading/error/empty
 
-- User registration and login
-- Project creation and editing
-- Task creation, editing and deletion
-- Kanban workflow with status updates
-- Filtering by project, priority, assignee and status
-- Search by task title
-- Project progress calculation
-- Dashboard with metrics
-- Responsive interface
+## Arquitetura
 
-## Tech Stack
+```text
+Usuário → React/Vite → Express REST API → PostgreSQL (Neon)
+```
 
-- Front-end: React + Vite
-- Back-end: Node.js + Express
-- Database: SQLite
-- Auth: JWT + bcrypt
+O frontend e a API são serviços do mesmo projeto Vercel. O backend usa conexão PostgreSQL pooled, queries parametrizadas, validação com `express-validator`, senhas com bcrypt, rate limiting, Helmet e CORS restritivo.
 
-## Project Structure
+## Modelo relacional
 
-- frontend: Vite React app
-- backend: Express REST API
+```mermaid
+erDiagram
+  USERS ||--o{ PROJECTS : owns
+  USERS ||--o{ PROJECT_MEMBERS : joins
+  PROJECTS ||--o{ PROJECT_MEMBERS : has
+  PROJECTS ||--o{ TASKS : contains
+  USERS ||--o{ TASKS : creates
+  USERS ||--o{ TASKS : assigned
+```
 
-## Database
+## Desenvolvimento
 
-Core tables:
+```bash
+cd backend && npm install && npm run dev
+cd frontend && npm install && npm run dev
+```
 
-- users
-- projects
-- project_members
-- tasks
+Copie `backend/.env.example` para `backend/.env` e informe `DATABASE_URL` e `JWT_SECRET`. Credenciais nunca são versionadas.
 
-## API
+## Stack
 
-Main endpoints:
-
-- POST /api/auth/register
-- POST /api/auth/login
-- GET /api/projects
-- POST /api/projects
-- PUT /api/projects/:id
-- DELETE /api/projects/:id
-- GET /api/tasks
-- POST /api/tasks
-- PUT /api/tasks/:id
-- DELETE /api/tasks/:id
-- GET /api/dashboard
-
-## Run locally
-
-1. Navigate to backend folder.
-2. Copy .env.example to .env and adjust values.
-3. Run npm install
-4. Run npm run dev
-5. Navigate to frontend folder.
-6. Run npm install
-7. Run npm run dev
-
-## Environment variables
-
-Backend .env:
-
-PORT=3002
-JWT_SECRET=change_this_secret
-JWT_EXPIRES_IN=7d
-
-Frontend .env:
-
-VITE_API_URL=http://localhost:3002/api
-
-## Deployment
-
-The project is prepared for deployment in Vercel or Netlify for the frontend, and Render or Railway for the backend.
-
-## Screenshots
-
-Add screenshots here after running the app locally.
-
-## Future improvements
-
-- Team invitations
-- Comments on tasks
-- Activity timeline
-- Role-based permissions
-- File attachments
-
-## Author
-
-Your Name
+React 19, React Router, Vite, Lucide, Node.js, Express, PostgreSQL, JWT, bcrypt e Vercel.
