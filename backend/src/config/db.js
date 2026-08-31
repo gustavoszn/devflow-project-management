@@ -50,15 +50,19 @@ async function createSchema() {
   `);
 }
 
-const ready = createSchema();
+let schemaPromise;
+function ensureSchema() {
+  if (!schemaPromise) schemaPromise = createSchema().catch((error) => { schemaPromise = null; throw error; });
+  return schemaPromise;
+}
 const db = {
   prepare(sql) {
     const text = postgresQuery(sql);
     return {
-      async get(...params) { await ready; return (await pool.query(text, params)).rows[0]; },
-      async all(...params) { await ready; return (await pool.query(text, params)).rows; },
+      async get(...params) { await ensureSchema(); return (await pool.query(text, params)).rows[0]; },
+      async all(...params) { await ensureSchema(); return (await pool.query(text, params)).rows; },
       async run(...params) {
-        await ready;
+        await ensureSchema();
         const statement = /^\s*insert\s/i.test(text) && !/\breturning\b/i.test(text) ? `${text} RETURNING id` : text;
         const result = await pool.query(statement, params);
         return { lastInsertRowid: result.rows[0]?.id, changes: result.rowCount };
@@ -66,7 +70,7 @@ const db = {
     };
   },
   pool,
-  ready,
+  ensureSchema,
 };
 
 module.exports = { db };
