@@ -6,9 +6,9 @@ const { sendSuccess } = require('../utils/response');
 const router = express.Router();
 router.use(authMiddleware);
 
-router.get('/', (req, res) => {
-  const projects = db.prepare('SELECT * FROM projects WHERE user_id = ?').all(req.user.id);
-  const tasks = db.prepare('SELECT * FROM tasks WHERE user_id = ?').all(req.user.id);
+router.get('/', async (req, res) => {
+  const projects = await db.prepare('SELECT * FROM projects WHERE user_id = ?').all(req.user.id);
+  const tasks = await db.prepare('SELECT * FROM tasks WHERE user_id = ?').all(req.user.id);
 
   const summary = {
     activeProjects: projects.filter((project) => project.status === 'active').length,
@@ -25,14 +25,14 @@ router.get('/', (req, res) => {
     { name: 'Concluído', count: tasks.filter((task) => task.status === 'done').length },
   ];
 
-  const latestTasks = tasks
+  const latestTasks = await Promise.all(tasks
     .slice()
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 6)
-    .map((task) => ({
+    .map(async (task) => ({
       ...task,
-      projectName: db.prepare('SELECT name FROM projects WHERE id = ?').get(task.project_id)?.name || 'Sem projeto',
-    }));
+      projectName: (await db.prepare('SELECT name FROM projects WHERE id = ?').get(task.project_id))?.name || 'Sem projeto',
+    })));
 
   return sendSuccess(res, 200, { summary, tasksByStatus, latestTasks });
 });
